@@ -1,0 +1,249 @@
+:description: Projet d’évolution de la base de données SSQA
+:author: Luc Lavoie
+:email: luc.lavoie@usherbrooke.ca
+//:author2: Prénom2 Nom2
+//:email2: prenom1.nom2@usherbrooke.ca
+:revnumber: 0.2.0a
+:revdate: 2022-12-10
+:version-label: document de travail, ne pas citer
+:keywords: programmation, module, génie logiciel, vérification, validation, test
+:doctype: book
+:encoding: utf-8
+:lang: fr
+:toc: macro
+:toc-title: Table des matières
+:toclevels: 3
+:sectnums:
+:imagesdir: ../../_configuration/AsciidocFX/docbook/images
+:icons: font
+:iconsdir: ../../_configuration/AsciidocFX/docbook/images/icons/
+:iconstype: png
+:iconfont-name: STIX Two Text
+:groupe: Akademia
+:depot: SSQA/sql/TS
+:branche: IFT187_2022-3
+:code_document: SSQA_v2022.3a
+
+[.text-center]
+[.big]*{groupe}*
+
+[.text-center]
+= {description}
+
+[.text-center]
+[%hardbreaks]
+*{code_document}*
+[.small]#—#
+[.small]#{author}, _{email}_#
+// [.small]#{author2} _{email2}_#
+// [.small]#_(les auteurs sont cités en ordre alphabétique nominal)_#
+[.small]#—#
+[.small]#_{groupe}/{depot}, variante {branche}_#
+[.small]#_version {revnumber}, en date du {revdate}_#
+[.small]#_({version-label})_#
+
+.[big]#Sommaire#
+
+Proposition d’évolution de la base de données SSQA en cours d’exploitation afin de couvrir de nouveaux besoins.
+
+.[big]#Mise en garde#
+La présente note technique est en cours d’élaboration ;
+en conséquence, elle est incomplète et peut contenir des erreurs.
+
+toc::[]
+
+[.big]#_Historique_#
+[cols="2,1,9"]
+[.small]
+|===
+| date | auteurs | description
+
+| 2022-12-10
+| LL
+| Revue interne.
+
+| 2022-12-03
+| LL
+| Première rédaction.
+
+| 2022-12-02
+| LL
+| Incorporation des TODO du fichier SSQA_cre.sql en date du 2022-11-30.
+
+| 2022-12-01
+| LL
+| Ébauche initiale sur la base du modèle du groupe Μῆτις.
+|===
+
+== Introduction
+
+Le présent document regroupe les demandes de modification formulées par les
+utilisateurs et les développeurs de la base de données SSQA.
+Elles ont été approuvées par la responsable de produit et regroupées dans
+le présent lot de demandes désigné par le code {code_document}.
+
+== Demandes de changement
+
+=== R01.SI_mod
+Toutes les unités de mesure du SI sont définies en termes d’unités fondamentales.
+En pratique, il suffit d’un terme additif (réel), d’un facteur multiplicatif (réel) et de sept exposants (entiers) -- un pour chacune des unités fondamentales.
+
+.Source
+* TODO 2022-11-24 (LL01) Ajouter les attributs requis par la définition en termes des unités fondamentales du SI.
+
+.Requis
+* Modélisation adéquate des unités de mesure en termes des unités fondamentales du SI.
+* Définition d’une fonction permettant d’ajouter de nouvelles unités composites.
+
+.Prolongement possible
+* Permettre la définition d’unités fondamentales supplémentaires (par exemple, le bit).
+* Fournir une fonction de représentation des mesures utilisant optimalement les préfixes du SI, par exemple
+  - mesure_rep_pref(0.00001, 'A') = '100 mA'
+  - mesure_rep_pref(1250, 'm') = '1,25 km'
+
+.Références suggérées
+* Wikipedia
+* Bureau international des poids et mesure (BIPM)
+
+=== R02.SI_sym
+La représentation des symboles des unités de mesure est soumise à des règles établies par le BIPM.
+
+.Source
+* TODO 2022-11-24 (LL01) Contraindre plus strictement les symboles.
+
+.Requis
+* Retracer ces règles.
+* Les mettre en oeuvre grâce aux contraintes du schéma.
+
+.Références suggérées
+* Wikipedia
+* Bureau international des poids et mesure (BIPM)
+
+=== R03.Validation_nom
+Le nom de la table des intervalles de validation est inapproprié (Seuils), il doit être changé pour « Validation ».
+
+.Source
+* TODO 2022-11-24 (LL01) Changer le nom de la table Seuils afin de refléter le concept d’intervalle de validation.
+
+.Requis
+* Changer le nom de la table Seuils pour « Validation ».
+* Faire percoler les conséquences de ce changement.
+
+=== R04.Variable_contrainte
+Différentes valeurs et intervalles de validation sont associés à la définition et l’exploitation des variables. Il est nécessaire de s’assurer que leur cohérence.
+
+.Sources
+* DONE 2022-11-24 (LL01) Prendre en compte la valeur de référence et la méthode d’échantillonnage.
+* TODO 2022-11-24 (LL01) Vérifier que la valeur de référence de la variable est comprise dans l’intervalle de validation.
+* TODO 2022-11-24 (LL01) Vérifier que les min et max des exigences sont compris dans l’intervalle de validation.
+
+.Requis
+* Identifier les contraintes applicables (les sources pourraient ne pas tout couvrir).
+* Les mettre en oeuvre.
+
+=== R05.Méthode_codification
+Les méthodes d’échantillonnage des variables sont en texte libre, ce qui laisse
+place à des erreurs de saisie qui pourraient résulter en la définition de
+plusieurs représentations pour une même méthode.
+
+.Source
+* TODO 2022-11-24 (LL01) Afin de mieux valider les données, les méthodes devraient être codifiées.
+
+.Requis
+* Proposer une codification des méthodes.
+* Modifier le schéma en conséquence.
+
+=== R06.Station_service
+L’absence de mesures s’explique le plus souvent par la date de mise en exploittation de la station et par les périodes d’entretien.
+
+.Source
+* TODO 2022-11-20 (LL01) Ajout la date de mise en service, notamment à des fins de validation des temps de mesure.
+
+.Requis
+* Ajouter les attributs de mise en exploitation et de fin d’exploitation de la station.
+* Maintenir une table des périodes d’entretien ou de non-disponibilité des stations.
+
+=== R07.Station_mobilité
+Certaines stations sont mobiles, leurs coordonnées varient donc dans le temps.
+Les stations fixes peuvent aussi être déplacées à l’occasion.
+
+.Source
+* TODO 2022-11-20 (LL01) Modéliser la mobilité de certaines stations.
+
+.Requis
+* Modifier le schéma afin de pouvoir consigner l’évolution des coordonnées des stations.
+* Adapter les requêtes déjà disponibles.
+
+=== R08.Validation_période
+Les exigences fixent une période maximale
+
+.Sources
+* TODO 2022-11-24 (LL01) Valider que « periode_unite » est une unité de temps.
+
+=== R09.Station_nom_facultatif
+Toutes les stations n’ont pas un nom, en particulier les stations mobiles
+ne peuvent être désignées par leur emplacement.
+
+.Sources
+* Conformité aux pratiques sur le terrain
+
+.Requis
+* Rendre le nom de la station facultatif.
+
+=== R10.Mesure_valeur_absente
+Toutes les tentatives de mesure effectuées par les stations ne sont pas couronnées
+de succès.
+
+Dans ce cas, la valeur de la mesure est invalide ou absente.
+Il demeure néanmoins important de conserver l’information que la tentative de
+mesure a eu lieu et de noter la cause de l’échec.
+Parmi les causes de l’échec, on note :
+
+* le bris du capteur,
+* l’instabilité du signal,
+* l’erreur d’encodage de la mesure,
+* la perte de la mesure suite à une erreur de stockage,
+* la perte de la mesure suite à une erreur de transmission.
+
+.Sources
+* Bonne pratique généralement reconnue.
+* Conformité aux spécifications de plusieurs capteurs équipant les stations.
+
+.Requis
+* Rendre la valeur d’une mesure facultative, en cas d’absence s’assurer d’en
+conserver la cause.
+
+=== R11.Documentation
+La documentation des prédicats des tables assurent l’interprétation correcte des données.
+Un prédicat doit donc être associé à chaque table de la façon la plus permanente possible.
+
+.Sources
+* Bonne pratique généralement reconnue.
+* Standard de programmation du MAD.
+
+.Requis
+Associer le texte complet du prédicat ainsi que ses dépendances fonctionnelles
+à l’aide d’un commentaire inscrit au catalogue (instruction COMMENT ON).
+
+////
+=== R12.Territoire_hiérarchie
+Les territoires sont souvent organisés selon une hiérarchie
+(au Québec : Région, Municipalité, Arrondissement, Quartier;
+en France : Région, Département, Commune, Arrondissement, Quartier).
+
+.Source
+-- TODO 2022-11-24 (LL01) Ajouter la description de l’organisation hiérarchique des territoires.
+////
+
+== Conclusion
+
+Les demandes de modification détaillées dans le présent document doivent être
+analysées, clarifiées et mises en oeuvre par l’équipe responsable de l’évolution
+du produit SSQA. L’effort requis a été estimé à 40 heures-personnes.
+Lors du bilan de fin projet, il sera demandé à l’équipe de présenter l’inventaire
+des efforts effectivement consentis par personne et par jour.
+
+[.text-center]
+*\\\\(.)////* +
+*:* +
+*////(.)\\\\*
